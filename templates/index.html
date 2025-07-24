@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>EMZE - Financial Fraud Detection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 30px 40px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        input {
+            display: block;
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button[type="submit"] {
+            background-color: #0066cc;
+            color: #fff;
+        }
+
+        button[type="button"] {
+            background-color: #eeeeee;
+            color: #333;
+        }
+
+        h3 {
+            color: #006600;
+            margin-top: 30px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #555;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>EMZE - Enter Financial Metrics</h2>
+        <form id="inputForm" action="/predict" method="post">
+            {% for field in ["Filing_Year", "Assets", "Revenues", "NetIncomeLoss", "OperatingExpenses", "OperatingIncomeLoss", "Debt", "Liabilities", "StockholdersEquity", "CashAndCashEquivalentsAtCarryingValue", "GrossProfit", "AssetsCurrent", "AssetsNoncurrent", "Current_Ratio", "Debt_Ratio", "Profit_Margin", "Return_on_Assets", "Operating_Margin", "Equity_Ratio", "Cash_Ratio"] %}
+            <label>{{ field.replace('_', ' ').replace("CashAndCashEquivalentsAtCarryingValue", "Cash & Cash Equivalents").replace("StockholdersEquity", "Stockholders' Equity") }}:</label>
+            <input type="number" name="{{ field }}" step="any" value="{{ values.get(field, '') if values else '' }}" />
+            {% endfor %}
+            <div class="button-group">
+                <button type="submit">Predict</button>
+                <button type="button" onclick="clearInputs()">Clear All</button>
+            </div>
+        </form>
+
+        {% if prediction_text %}
+            <h3>{{ prediction_text }}</h3>
+            <p>{{ explanation }}</p>
+        {% endif %}
+    </div>
+
+    <script>
+        const inputs = document.querySelectorAll("input");
+
+        // Enter to move to next field or submit
+        inputs.forEach((input, index) => {
+            input.addEventListener("keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (index + 1 < inputs.length) {
+                        inputs[index + 1].focus();
+                    } else {
+                        document.querySelector("button[type='submit']").click();
+                    }
+                }
+            });
+        });
+
+        // Clear All Button
+        function clearInputs() {
+            inputs.forEach(input => input.value = "");
+        }
+    </script>
+</body>
+</html>
